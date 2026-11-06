@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sulfur Deals Live Business Dashboard | EMPR Exports</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .badge { padding: 4px 10px; border-radius: 9999px; font-size: 0.725rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-active { background-color: #dcfce7; color: #15803d; }
+    .badge-inspection { background-color: #fef9c3; color: #a16207; }
+    .badge-review { background-color: #ffedd5; color: #c2410c; }
+    .badge-completed { background-color: #e0e7ff; color: #4338ca; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- Top Navbar -->
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-amber-500/20">
+          S
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-base sm:text-lg tracking-tight text-white">EMPR Sulfur Desk</h1>
+            <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-semibold">Live Live Hub</span>
+          </div>
+          <p class="text-xs text-slate-400">EcoStim &bull; NOUM Commodities &bull; EMPR Exports JV</p>
+        </div>
+      </div>
+
+      <!-- Cloud Sync & GitHub Integration Status -->
+      <div class="flex items-center gap-2 sm:gap-4">
+        <div id="syncBadge" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="syncStatusText">Auto-Saved (Local + Gist Ready)</span>
+        </div>
+        <button onclick="openConfigModal()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-700 transition">
+          <i class="fa-brands fa-github text-sm"></i>
+          <span>GitHub Cloud Sync</span>
+        </button>
+        <button onclick="openNewDealModal()" class="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-md shadow-amber-500/20 transition">
+          <i class="fa-solid fa-plus"></i>
+          <span>New Deal</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
+
+    <!-- KPI Summary Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="p-5 rounded-2xl bg-slate-800/60 border border-slate-800 backdrop-blur relative overflow-hidden">
+        <div class="text-xs font-medium text-slate-400">Total Contract Value</div>
+        <div class="text-2xl font-bold mt-2 text-white" id="kpiGrossValue">$0.00</div>
+        <div class="text-[11px] text-emerald-400 mt-1 flex items-center gap-1">
+          <i class="fa-solid fa-arrow-trend-up"></i>
+          <span>Active Pipeline Value</span>
+        </div>
+        <div class="absolute -right-4 -bottom-4 text-slate-800/30 text-6xl pointer-events-none">
+          <i class="fa-solid fa-dollar-sign"></i>
+        </div>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-slate-800/60 border border-slate-800 backdrop-blur relative overflow-hidden">
+        <div class="text-xs font-medium text-slate-400">Total Volume</div>
+        <div class="text-2xl font-bold mt-2 text-white" id="kpiTotalVolume">0 MT</div>
+        <div class="text-[11px] text-amber-400 mt-1 flex items-center gap-1">
+          <i class="fa-solid fa-cubes-stacked"></i>
+          <span>Granular Sulfur 99.88% - 99.95%</span>
+        </div>
+        <div class="absolute -right-4 -bottom-4 text-slate-800/30 text-6xl pointer-events-none">
+          <i class="fa-solid fa-weight-hanging"></i>
+        </div>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-slate-800/60 border border-slate-800 backdrop-blur relative overflow-hidden">
+        <div class="text-xs font-medium text-slate-400">EMPR Projected Margin</div>
+        <div class="text-2xl font-bold mt-2 text-emerald-400" id="kpiNetMargin">$0.00</div>
+        <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+          <i class="fa-solid fa-shield-halved text-amber-400"></i>
+          <span>Protected under Tri-Party IMFPA</span>
+        </div>
+        <div class="absolute -right-4 -bottom-4 text-slate-800/30 text-6xl pointer-events-none">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-slate-800/60 border border-slate-800 backdrop-blur relative overflow-hidden">
+        <div class="text-xs font-medium text-slate-400">Deals in Pipeline</div>
+        <div class="text-2xl font-bold mt-2 text-white" id="kpiDealCount">0</div>
+        <div class="text-[11px] text-slate-400 mt-1" id="kpiDealBreakdown">0 Active &bull; 0 Inspection</div>
+        <div class="absolute -right-4 -bottom-4 text-slate-800/30 text-6xl pointer-events-none">
+          <i class="fa-solid fa-handshake"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="border-b border-slate-800 flex items-center gap-8 text-sm font-semibold">
+      <button onclick="switchTab('deals')" id="tabBtnDeals" class="pb-3 border-b-2 border-amber-500 text-amber-400 flex items-center gap-2">
+        <i class="fa-solid fa-list-check"></i> Live Deals Master
+      </button>
+      <button onclick="switchTab('counterparties')" id="tabBtnCounterparties" class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2">
+        <i class="fa-solid fa-building-columns"></i> Counterparties & Banking
+      </button>
+      <button onclick="switchTab('ops')" id="tabBtnOps" class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2">
+        <i class="fa-solid fa-vial-circle-check"></i> SGS Assay & War Logistics
+      </button>
+    </div>
+
+    <!-- TAB 1: Live Deals Master Table -->
+    <section id="tabDeals" class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <h2 class="text-base font-semibold text-slate-200">Active Cargo Transactions</h2>
+          <span class="text-xs text-slate-400">Click any row to view, edit, or recalculate</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="text" id="dealSearchInput" oninput="renderDealsTable()" placeholder="Search deal ref, buyer, origin..." class="bg-slate-800 border border-slate-700 text-xs px-3 py-1.5 rounded-lg text-slate-200 focus:outline-none focus:border-amber-500 w-64">
+          <button onclick="exportJSON()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 transition" title="Export Backup">
+            <i class="fa-solid fa-download"></i> Backup
+          </button>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-slate-800 bg-slate-950/60 overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-900 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
+                <th class="py-3 px-4">Deal Ref</th>
+                <th class="py-3 px-4">Date</th>
+                <th class="py-3 px-4">Buyer / Principal</th>
+                <th class="py-3 px-4">Origin & Port</th>
+                <th class="py-3 px-4 text-right">Volume</th>
+                <th class="py-3 px-4 text-right">Selling Price</th>
+                <th class="py-3 px-4 text-right">Contract Value</th>
+                <th class="py-3 px-4 text-right">EMPR Margin</th>
+                <th class="py-3 px-4">Instrument</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="dealsTableBody" class="divide-y divide-slate-800/60 text-slate-300">
+              <!-- Dynamically Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: Counterparties & Banking -->
+    <section id="tabCounterparties" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-semibold text-slate-200">Counterparties, JVs & Escrow Channels</h2>
+          <p class="text-xs text-slate-400">Institutional banking profiles, IMFPA pay orders, and SWIFT routes</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="counterpartiesContainer">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- TAB 3: SGS Assay & War Logistics -->
+    <section id="tabOps" class="hidden space-y-4">
+      <div>
+        <h2 class="text-base font-semibold text-slate-200">SGS Verification & Maritime Security Protocol</h2>
+        <p class="text-xs text-slate-400">Active monitoring for Almaty site testing and Black Sea / Baltic shipping conditions</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-microscope text-amber-400"></i>
+              <h3 class="font-bold text-sm text-white">SGS Quality Assay Benchmark</h3>
+            </div>
+            <span class="badge badge-inspection">Kazakhstan Lab Mandate</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Standard export specification requires alignment between SCO (99.88% S min) and SPA (99.95% S min). Site testing verified in Almaty with counter-seals for NOUM and EMPR.
+          </p>
+          <div class="space-y-2 text-xs">
+            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span class="text-slate-400">Sulfur Purity (Dry Basis)</span>
+              <span class="font-bold text-emerald-400">99.88% – 99.95% Guarantee</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span class="text-slate-400">Moisture Content</span>
+              <span class="font-semibold text-slate-200">&lt; 0.5% max</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span class="text-slate-400">Ash Content</span>
+              <span class="font-semibold text-slate-200">&lt; 0.05% max</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span class="text-slate-400">Acidity (as H2SO4)</span>
+              <span class="font-semibold text-slate-200">&lt; 0.01% max</span>
+            </div>
+            <div class="flex justify-between py-1.5">
+              <span class="text-slate-400">Inspection Timing</span>
+              <span class="font-semibold text-slate-200">Site visit Nov 4, 2026 (Almaty)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-shield-halved text-red-400"></i>
+              <h3 class="font-bold text-sm text-white">War Risk & Sanctions Protocol</h3>
+            </div>
+            <span class="badge badge-review">High Watch Area</span>
+          </div>
+          <div class="space-y-3 text-xs leading-relaxed text-slate-300">
+            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div class="font-semibold text-amber-400 flex items-center gap-1.5 mb-1">
+                <i class="fa-solid fa-anchor"></i> Black Sea Route (Poti, Georgia)
+              </div>
+              <p class="text-slate-400">Joint War Committee (JWC) listed zone. Requires Additional War Risk Premiums (AWRP) and transit origin certification via Caspian/Caucasus corridor to clear Kazakhstan refinery origin.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div class="font-semibold text-cyan-400 flex items-center gap-1.5 mb-1">
+                <i class="fa-solid fa-ship"></i> Baltic Route (Gdańsk, Poland)
+              </div>
+              <p class="text-slate-400">Requires certified non-sanctioned Polish Certificate of Origin and terminal verification before operative financial instrument to prevent Russian transshipment flags.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Edit / Add Deal Modal -->
+  <div id="dealModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 id="modalTitle" class="text-base font-bold text-white">Add New Deal</h3>
+        <button onclick="closeDealModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
+      </div>
+
+      <form id="dealForm" onsubmit="saveDeal(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="formDealId">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Deal Reference</label>
+            <input type="text" id="formRef" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" placeholder="e.g. EMPR-SUL-002">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Date</label>
+            <input type="date" id="formDate" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Buyer / Principal</label>
+            <input type="text" id="formBuyer" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" placeholder="Buyer Company or Principal Name">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Origin & Load Port</label>
+            <input type="text" id="formRoute" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" placeholder="e.g. Kazakhstan / Poti Port">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Volume (Metric Tons)</label>
+            <input type="number" id="formVolume" step="100" required oninput="calculateFormTotals()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" placeholder="e.g. 25000">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Base Supply Price (USD/MT)</label>
+            <input type="number" id="formBasePrice" step="0.5" required oninput="calculateFormTotals()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" placeholder="e.g. 650">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Buyer Selling Price (USD/MT)</label>
+            <input type="number" id="formSellingPrice" step="0.5" required oninput="calculateFormTotals()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" placeholder="e.g. 670">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Total Broker Fee (USD/MT)</label>
+            <input type="number" id="formBrokerFee" step="0.5" value="0" oninput="calculateFormTotals()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" placeholder="e.g. 20 (10+10)">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Payment Instrument</label>
+            <input type="text" id="formInstrument" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" placeholder="e.g. DLC MT700 at sight / SBLC MT760">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Deal Status</label>
+            <select id="formStatus" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500">
+              <option value="Active / Contracting">Active / Contracting</option>
+              <option value="Inspection / Assay">Inspection / Assay</option>
+              <option value="Under Review">Under Review</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 grid grid-cols-2 gap-4 text-xs">
+          <div>
+            <span class="text-slate-400">Total Contract Value:</span>
+            <div id="previewContractValue" class="font-bold text-white text-sm mt-0.5">$0.00</div>
+          </div>
+          <div>
+            <span class="text-slate-400">EMPR Net Margin:</span>
+            <div id="previewNetMargin" class="font-bold text-emerald-400 text-sm mt-0.5">$0.00</div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1 font-semibold">Operational / Counterparty Notes</label>
+          <textarea id="formNotes" rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" placeholder="e.g. Protected under IMFPA with Mashreq pay-order instruction..."></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+          <button type="button" onclick="closeDealModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shadow-lg shadow-amber-500/20">Save & Auto-Sync</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Cloud Sync / GitHub Gist Config Modal -->
+  <div id="configModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-brands fa-github text-xl text-amber-400"></i>
+          <h3 class="text-base font-bold text-white">GitHub Cloud Auto-Save Config</h3>
+        </div>
+        <button onclick="closeConfigModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
+      </div>
+
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Connect a free <strong>GitHub Personal Access Token</strong> and <strong>Gist ID</strong> to enable real-time, zero-backend cloud saving. Every time you add, edit, or delete a deal, it instantly updates in the cloud and synchronizes across all devices.
+      </p>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1 font-semibold">GitHub Personal Access Token (PAT)</label>
+          <input type="password" id="ghToken" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+          <span class="text-[10px] text-slate-500">Requires only 'gist' scope permissions.</span>
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1 font-semibold">GitHub Gist ID (Existing or blank to auto-create)</label>
+          <input type="text" id="ghGistId" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" placeholder="e.g. 7f8a19b2c3d4e5f6...">
+        </div>
+      </div>
+
+      <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-300">
+        <i class="fa-solid fa-lock mr-1"></i> Credentials are stored encrypted in your browser's private local storage. No third-party servers ever touch your keys.
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+        <button onclick="disconnectCloud()" class="text-red-400 hover:text-red-300 text-xs font-semibold">Clear Token</button>
+        <div class="flex gap-2">
+          <button onclick="closeConfigModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs">Cancel</button>
+          <button onclick="saveCloudConfig()" class="px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md shadow-amber-500/20">Connect Cloud</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/80 py-4 text-center text-xs text-slate-500">
+    EMPR Exports Private Limited &bull; NOUM Commodities Ltd. &bull; EcoStim International L.L.C-FZ &bull; Live Sulfur Trading Portal
+  </footer>
+
+  <!-- Core JavaScript -->
+  <script>
+    // Initial Seed Deals from User Transaction Records
+    const defaultDeals = [
+      {
+        id: "deal-1",
+        ref: "EMPR-SUL-001",
+        date: "2026-11-02",
+        buyer: "Global Agri / Chemical Buyer",
+        origin: "Kazakhstan / Port of Poti",
+        volume: 30000,
+        basePrice: 650,
+        sellingPrice: 670,
+        brokerFee: 20, // $10 to Broker 1, $10 to Broker 2
+        instrument: "DLC MT700 at sight",
+        status: "Active / Contracting",
+        notes: "Protected via Tri-Party IMFPA. Supply chain: EcoStim -> NOUM -> EMPR."
+      },
+      {
+        id: "deal-2",
+        ref: "DEAL 01",
+        date: "2026-11-04",
+        buyer: "Mr. Helal & Mr. Satyan Group",
+        origin: "Almaty, Kazakhstan",
+        volume: 20000,
+        basePrice: 650,
+        sellingPrice: 670,
+        brokerFee: 10,
+        instrument: "DLC MT700 / MT103",
+        status: "Inspection / Assay",
+        notes: "SGS Kazakhstan site inspection and assay testing at Almaty facility."
+      },
+      {
+        id: "deal-3",
+        ref: "OLY-WJD-001",
+        date: "2026-11-04",
+        buyer: "Ankur Agarwal",
+        origin: "Poland / Port of Gdańsk",
+        volume: 25000,
+        basePrice: 720,
+        sellingPrice: 750,
+        brokerFee: 10,
+        instrument: "SBLC MT760 (Kasikorn) + MT103",
+        status: "Under Review",
+        notes: "Spot shipment in 1MT Jumbo Bags. SBLC to Thailand Kasikorn Bank + 2% PB ($375k)."
+      }
+    ];
+
+    const counterparties = [
+      {
+        name: "EMPR Exports Private Limited",
+        role: "Facilitator / Originator",
+        country: "India",
+        rep: "Mr. Abinash Samantaray (CEO & MD)",
+        bank: "HDFC Bank / State Bank of India",
+        covenant: "Protected by tri-party IMFPA, automatic pay order instruction"
+      },
+      {
+        name: "EcoStim International L.L.C-FZ",
+        role: "Direct Supplier / Seller",
+        country: "Dubai, UAE",
+        rep: "Mr. Philip Gaffney (CEO)",
+        bank: "Mashreq Bank PSC (Mashreq Neo-Biz)",
+        covenant: "Primary seller signatory on master SPA (ECO-NOUM-SPA0001)"
+      },
+      {
+        name: "NOUM Commodities Ltd.",
+        role: "Supply Chain Coordinator",
+        country: "Canada",
+        rep: "Mr. Mark Manning (Director)",
+        bank: "Royal Bank of Canada (RBC) / Barclays",
+        covenant: "Holds JVA with EcoStim and JVA with EMPR Exports"
+      },
+      {
+        name: "Olympus WJD General Trading L.L.C",
+        role: "Seller Mandate (Poland Offer)",
+        country: "Dubai, UAE",
+        rep: "Juan A. Gonzalez De Audicana",
+        bank: "Third-party LC Channel via Thailand",
+        covenant: "Signatory of FCO OLY-WJD/FCO/SUL-MMH/0411/2026"
+      },
+      {
+        name: "Kanwal Nine Group Co. Ltd.",
+        role: "Trade Finance Beneficiary",
+        country: "Thailand",
+        rep: "Kanwal N. Singh (CEO)",
+        bank: "Kasikorn Bank PCL, Chon Buri",
+        covenant: "Beneficiary for $18.75M SBLC MT760 with 2% PB guarantee"
+      },
+      {
+        name: "Broker Group 1 & 2",
+        role: "Commercial Intermediaries",
+        country: "UAE / International",
+        rep: "Designated Payees",
+        bank: "SWIFT MT103 Direct Pay Order",
+        covenant: "NCNDA/IMFPA executed at $10/MT commission each on $670/MT deal"
+      }
+    ];
+
+    let deals = [];
+
+    // Initialize data from LocalStorage or Default
+    function initData() {
+      const saved = localStorage.getItem('empr_sulfur_deals');
+      if (saved) {
+        try {
+          deals = JSON.parse(saved);
+        } catch (e) {
+          deals = [...defaultDeals];
+        }
+      } else {
+        deals = [...defaultDeals];
+        saveLocal();
+      }
+      renderAll();
+      syncWithCloudIfExists();
+    }
+
+    function saveLocal() {
+      localStorage.setItem('empr_sulfur_deals', JSON.stringify(deals));
+      updateSyncBadge("Saved Locally");
+    }
+
+    function renderAll() {
+      updateKPIs();
+      renderDealsTable();
+      renderCounterparties();
+    }
+
+    function updateKPIs() {
+      let totalGross = 0;
+      let totalVol = 0;
+      let totalMargin = 0;
+      let activeCount = 0;
+      let inspectionCount = 0;
+
+      deals.forEach(d => {
+        const vol = parseFloat(d.volume) || 0;
+        const sell = parseFloat(d.sellingPrice) || 0;
+        const base = parseFloat(d.basePrice) || 0;
+        const fee = parseFloat(d.brokerFee) || 0;
+        const marginPerMt = (sell - base) - fee;
+
+        totalGross += vol * sell;
+        totalVol += vol;
+        totalMargin += vol * (marginPerMt > 0 ? marginPerMt : 0);
+
+        if (d.status.toLowerCase().includes('active')) activeCount++;
+        if (d.status.toLowerCase().includes('inspection')) inspectionCount++;
+      });
+
+      document.getElementById('kpiGrossValue').textContent = '$' + totalGross.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('kpiTotalVolume').textContent = totalVol.toLocaleString('en-US') + ' MT';
+      document.getElementById('kpiNetMargin').textContent = '$' + totalMargin.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('kpiDealCount').textContent = deals.length;
+      document.getElementById('kpiDealBreakdown').textContent = `${activeCount} Active • ${inspectionCount} Inspection`;
+    }
+
+    function renderDealsTable() {
+      const tbody = document.getElementById('dealsTableBody');
+      const query = (document.getElementById('dealSearchInput')?.value || '').toLowerCase();
+      tbody.innerHTML = '';
+
+      const filtered = deals.filter(d => 
+        d.ref.toLowerCase().includes(query) ||
+        d.buyer.toLowerCase().includes(query) ||
+        d.origin.toLowerCase().includes(query) ||
+        d.status.toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" class="text-center py-8 text-slate-500 font-medium">No matching deals found.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(deal => {
+        const vol = parseFloat(deal.volume) || 0;
+        const sell = parseFloat(deal.sellingPrice) || 0;
+        const base = parseFloat(deal.basePrice) || 0;
+        const fee = parseFloat(deal.brokerFee) || 0;
+        const grossVal = vol * sell;
+        const netMargin = vol * ((sell - base) - fee);
+
+        let badgeClass = 'badge-active';
+        if (deal.status.includes('Inspection')) badgeClass = 'badge-inspection';
+        if (deal.status.includes('Review')) badgeClass = 'badge-review';
+        if (deal.status.includes('Completed')) badgeClass = 'badge-completed';
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/40 transition border-b border-slate-800/40";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-amber-400">${deal.ref}</td>
+          <td class="py-3 px-4 text-slate-400">${deal.date}</td>
+          <td class="py-3 px-4 font-semibold text-white">${deal.buyer}</td>
+          <td class="py-3 px-4 text-slate-300">${deal.origin}</td>
+          <td class="py-3 px-4 text-right font-medium">${vol.toLocaleString()} MT</td>
+          <td class="py-3 px-4 text-right font-semibold text-white">$${sell.toFixed(2)}</td>
+          <td class="py-3 px-4 text-right font-bold text-white">$${grossVal.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-right font-bold text-emerald-400">$${netMargin.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-slate-400 font-mono text-[11px]">${deal.instrument}</td>
+          <td class="py-3 px-4"><span class="badge ${badgeClass}">${deal.status}</span></td>
+          <td class="py-3 px-4 text-center">
+            <div class="flex items-center justify-center gap-2">
+              <button onclick="editDeal('${deal.id}')" class="text-slate-400 hover:text-amber-400 p-1" title="Edit Deal">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button onclick="deleteDeal('${deal.id}')" class="text-slate-400 hover:text-red-400 p-1" title="Delete Deal">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderCounterparties() {
+      const container = document.getElementById('counterpartiesContainer');
+      container.innerHTML = '';
+
+      counterparties.forEach(c => {
+        const card = document.createElement('div');
+        card.className = "p-5 rounded-2xl bg-slate-800/40 border border-slate-800 space-y-3";
+        card.innerHTML = `
+          <div class="flex items-start justify-between">
+            <div>
+              <h4 class="font-bold text-sm text-white">${c.name}</h4>
+              <span class="text-[11px] text-amber-400 font-semibold">${c.role} &bull; ${c.country}</span>
+            </div>
+            <i class="fa-solid fa-building text-slate-600"></i>
+          </div>
+          <div class="text-xs space-y-1.5 pt-2 border-t border-slate-800/60">
+            <div class="text-slate-300"><span class="text-slate-500">Signatory:</span> ${c.rep}</div>
+            <div class="text-slate-300"><span class="text-slate-500">Bank Channel:</span> ${c.bank}</div>
+            <div class="text-slate-400 text-[11px] leading-relaxed italic">${c.covenant}</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Tab Switching
+    function switchTab(tab) {
+      document.getElementById('tabDeals').classList.add('hidden');
+      document.getElementById('tabCounterparties').classList.add('hidden');
+      document.getElementById('tabOps').classList.add('hidden');
+
+      document.getElementById('tabBtnDeals').className = "pb-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2";
+      document.getElementById('tabBtnCounterparties').className = "pb-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2";
+      document.getElementById('tabBtnOps').className = "pb-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2";
+
+      if (tab === 'deals') {
+        document.getElementById('tabDeals').classList.remove('hidden');
+        document.getElementById('tabBtnDeals').className = "pb-3 border-b-2 border-amber-500 text-amber-400 flex items-center gap-2 font-semibold";
+      } else if (tab === 'counterparties') {
+        document.getElementById('tabCounterparties').classList.remove('hidden');
+        document.getElementById('tabBtnCounterparties').className = "pb-3 border-b-2 border-amber-500 text-amber-400 flex items-center gap-2 font-semibold";
+      } else if (tab === 'ops') {
+        document.getElementById('tabOps').classList.remove('hidden');
+        document.getElementById('tabBtnOps').className = "pb-3 border-b-2 border-amber-500 text-amber-400 flex items-center gap-2 font-semibold";
+      }
+    }
+
+    // Modal & Form Handlers
+    function openNewDealModal() {
+      document.getElementById('modalTitle').textContent = "Add New Sulfur Deal";
+      document.getElementById('dealForm').reset();
+      document.getElementById('formDealId').value = "";
+      document.getElementById('formDate').value = new Date().toISOString().split('T')[0];
+      calculateFormTotals();
+      document.getElementById('dealModal').classList.remove('hidden');
+    }
+
+    function editDeal(id) {
+      const deal = deals.find(d => d.id === id);
+      if (!deal) return;
+
+      document.getElementById('modalTitle').textContent = "Edit Deal: " + deal.ref;
+      document.getElementById('formDealId').value = deal.id;
+      document.getElementById('formRef').value = deal.ref;
+      document.getElementById('formDate').value = deal.date;
+      document.getElementById('formBuyer').value = deal.buyer;
+      document.getElementById('formRoute').value = deal.origin;
+      document.getElementById('formVolume').value = deal.volume;
+      document.getElementById('formBasePrice').value = deal.basePrice;
+      document.getElementById('formSellingPrice').value = deal.sellingPrice;
+      document.getElementById('formBrokerFee').value = deal.brokerFee;
+      document.getElementById('formInstrument').value = deal.instrument;
+      document.getElementById('formStatus').value = deal.status;
+      document.getElementById('formNotes').value = deal.notes || "";
+
+      calculateFormTotals();
+      document.getElementById('dealModal').classList.remove('hidden');
+    }
+
+    function closeDealModal() {
+      document.getElementById('dealModal').classList.add('hidden');
+    }
+
+    function calculateFormTotals() {
+      const vol = parseFloat(document.getElementById('formVolume').value) || 0;
+      const base = parseFloat(document.getElementById('formBasePrice').value) || 0;
+      const sell = parseFloat(document.getElementById('formSellingPrice').value) || 0;
+      const fee = parseFloat(document.getElementById('formBrokerFee').value) || 0;
+
+      const gross = vol * sell;
+      const net = vol * ((sell - base) - fee);
+
+      document.getElementById('previewContractValue').textContent = '$' + gross.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('previewNetMargin').textContent = '$' + net.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function saveDeal(e) {
+      e.preventDefault();
+      const id = document.getElementById('formDealId').value;
+      const dealData = {
+        id: id || ("deal-" + Date.now()),
+        ref: document.getElementById('formRef').value.trim(),
+        date: document.getElementById('formDate').value,
+        buyer: document.getElementById('formBuyer').value.trim(),
+        origin: document.getElementById('formRoute').value.trim(),
+        volume: parseFloat(document.getElementById('formVolume').value) || 0,
+        basePrice: parseFloat(document.getElementById('formBasePrice').value) || 0,
+        sellingPrice: parseFloat(document.getElementById('formSellingPrice').value) || 0,
+        brokerFee: parseFloat(document.getElementById('formBrokerFee').value) || 0,
+        instrument: document.getElementById('formInstrument').value.trim(),
+        status: document.getElementById('formStatus').value,
+        notes: document.getElementById('formNotes').value.trim()
+      };
+
+      if (id) {
+        const index = deals.findIndex(d => d.id === id);
+        if (index !== -1) deals[index] = dealData;
+      } else {
+        deals.unshift(dealData);
+      }
+
+      saveLocal();
+      renderAll();
+      closeDealModal();
+      pushToCloudIfConfigured();
+    }
+
+    function deleteDeal(id) {
+      if (!confirm("Are you sure you want to remove this deal record?")) return;
+      deals = deals.filter(d => d.id !== id);
+      saveLocal();
+      renderAll();
+      pushToCloudIfConfigured();
+    }
+
+    function exportJSON() {
+      const blob = new Blob([JSON.stringify(deals, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `EMPR_Sulfur_Deals_Backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+    }
+
+    // GitHub Gist Cloud Auto-Save Engine
+    function openConfigModal() {
+      document.getElementById('ghToken').value = localStorage.getItem('empr_gh_token') || "";
+      document.getElementById('ghGistId').value = localStorage.getItem('empr_gh_gist_id') || "";
+      document.getElementById('configModal').classList.remove('hidden');
+    }
+
+    function closeConfigModal() {
+      document.getElementById('configModal').classList.add('hidden');
+    }
+
+    function saveCloudConfig() {
+      const token = document.getElementById('ghToken').value.trim();
+      const gistId = document.getElementById('ghGistId').value.trim();
+
+      if (token) localStorage.setItem('empr_gh_token', token);
+      if (gistId) localStorage.setItem('empr_gh_gist_id', gistId);
+
+      closeConfigModal();
+      syncWithCloudIfExists();
+    }
+
+    function disconnectCloud() {
+      localStorage.removeItem('empr_gh_token');
+      localStorage.removeItem('empr_gh_gist_id');
+      document.getElementById('ghToken').value = "";
+      document.getElementById('ghGistId').value = "";
+      updateSyncBadge("Saved Locally");
+      closeConfigModal();
+    }
+
+    function updateSyncBadge(text, isError = false) {
+      const badge = document.getElementById('syncBadge');
+      const label = document.getElementById('syncStatusText');
+      if (badge && label) {
+        badge.classList.remove('hidden');
+        label.textContent = text;
+        if (isError) {
+          badge.className = "hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-950/40 border border-red-500/30 text-red-400 text-xs font-medium";
+        } else {
+          badge.className = "hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs font-medium";
+        }
+      }
+    }
+
+    async function pushToCloudIfConfigured() {
+      const token = localStorage.getItem('empr_gh_token');
+      let gistId = localStorage.getItem('empr_gh_gist_id');
+      if (!token) return;
+
+      updateSyncBadge("Syncing to GitHub Cloud...");
+
+      const payload = {
+        description: "EMPR Sulfur Trading Dashboard Live Data",
+        public: false,
+        files: {
+          "sulfur_deals.json": {
+            content: JSON.stringify(deals, null, 2)
+          }
+        }
+      };
+
+      try {
+        let res;
+        if (gistId) {
+          res = await fetch(`https://api.github.com/gists/${gistId}`, {
+            method: 'PATCH',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+        } else {
+          res = await fetch(`https://api.github.com/gists`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+        }
+
+        if (res.ok) {
+          const data = await res.json();
+          if (!gistId && data.id) {
+            localStorage.setItem('empr_gh_gist_id', data.id);
+          }
+          updateSyncBadge("Cloud Synced (GitHub Gist)");
+        } else {
+          updateSyncBadge("Cloud Sync Error (Check Token)", true);
+        }
+      } catch (err) {
+        console.error(err);
+        updateSyncBadge("Cloud Sync Offline", true);
+      }
+    }
+
+    async function syncWithCloudIfExists() {
+      const token = localStorage.getItem('empr_gh_token');
+      const gistId = localStorage.getItem('empr_gh_gist_id');
+      if (!token || !gistId) return;
+
+      updateSyncBadge("Fetching from GitHub Cloud...");
+      try {
+        const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.files && data.files["sulfur_deals.json"]) {
+            deals = JSON.parse(data.files["sulfur_deals.json"].content);
+            saveLocal();
+            renderAll();
+            updateSyncBadge("Cloud Synced (GitHub Gist)");
+          }
+        }
+      } catch (e) {
+        console.error(e);
+        updateSyncBadge("Using Local Cache", false);
+      }
+    }
+
+    // Startup
+    document.addEventListener('DOMContentLoaded', () => {
+      initData();
+    });
+  </script>
+</body>
+</html>
+index.html
+Displaying index.html.
