@@ -32,22 +32,18 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="font-bold text-base sm:text-lg tracking-tight text-white">EMPR Sulfur Desk</h1>
-            <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-semibold">Live Realtime Sync</span>
+            <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-semibold">Live Cloud Hub</span>
           </div>
           <p class="text-xs text-slate-400">EcoStim • NOUM Commodities • EMPR Exports JV</p>
         </div>
       </div>
 
-      <!-- Real-Time Sync Controls -->
+      <!-- Sync Status & Action Triggers -->
       <div class="flex items-center gap-2 sm:gap-4">
         <div id="syncBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
           <span id="syncDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span id="syncStatusText">Connecting Cloud...</span>
         </div>
-        <button onclick="openConfigModal()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-700 transition">
-          <i class="fa-solid fa-fire text-amber-400"></i>
-          <span class="hidden sm:inline">Firebase Config</span>
-        </button>
         <button onclick="openNewDealModal()" class="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-md shadow-amber-500/20 transition">
           <i class="fa-solid fa-plus"></i>
           <span>New Deal</span>
@@ -59,7 +55,7 @@
   <!-- Main Container -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
 
-    <!-- KPI Metric Scorecards -->
+    <!-- KPI Metric Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
       <div class="p-5 rounded-2xl bg-slate-800/60 border border-slate-800 backdrop-blur relative overflow-hidden">
         <div class="text-xs font-medium text-slate-400">Total Contract Value</div>
@@ -113,7 +109,7 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <h2 class="text-base font-semibold text-slate-200">Active Cargo Transactions</h2>
-          <span class="text-xs text-slate-400">Syncs immediately across all devices</span>
+          <span class="text-xs text-slate-400">Live multi-device real-time sync</span>
         </div>
         <div class="flex items-center gap-2">
           <input type="text" id="dealSearchInput" oninput="renderDealsTable()" placeholder="Search deal ref, buyer, origin..." class="bg-slate-800 border border-slate-700 text-xs px-3 py-1.5 rounded-lg text-slate-200 focus:outline-none focus:border-amber-500 w-64">
@@ -155,9 +151,7 @@
         <h2 class="text-base font-semibold text-slate-200">Counterparties, JVs & Escrow Channels</h2>
         <p class="text-xs text-slate-400">Institutional banking profiles, IMFPA pay orders, and SWIFT routes</p>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="counterpartiesContainer">
-        <!-- Rendered via JavaScript -->
-      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="counterpartiesContainer"></div>
     </section>
 
     <!-- TAB 3: SGS Assay & War Logistics -->
@@ -314,67 +308,22 @@
     </div>
   </div>
 
-  <!-- Firebase Configuration Modal -->
-  <div id="configModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-fire text-amber-400 text-xl"></i>
-          <h3 class="text-base font-bold text-white">Firebase Realtime Database Config</h3>
-        </div>
-        <button onclick="closeConfigModal()" class="text-slate-400 hover:text-white text-lg">×</button>
-      </div>
-
-      <p class="text-xs text-slate-300 leading-relaxed">
-        Connect your Realtime Database (from your screenshot). All connected devices will instantly update whenever a deal is added, edited, or deleted.
-      </p>
-
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-400 mb-1 font-semibold">Database URL</label>
-          <input type="text" id="cfgDbUrl" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" value="https://sulfur-desk-default-rtdb.firebaseio.com">
-        </div>
-        <div>
-          <label class="block text-slate-400 mb-1 font-semibold">API Key</label>
-          <input type="text" id="cfgApiKey" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" placeholder="AIzaSy...">
-        </div>
-        <div>
-          <label class="block text-slate-400 mb-1 font-semibold">Project ID</label>
-          <input type="text" id="cfgProjectId" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-amber-500" value="sulfur-desk">
-        </div>
-      </div>
-
-      <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-300 leading-relaxed">
-        <i class="fa-solid fa-circle-info mr-1"></i> Paste these same values on any other phone or laptop to keep all screens linked together.
-      </div>
-
-      <div class="flex items-center justify-between pt-3 border-t border-slate-800">
-        <button onclick="clearFirebaseConfig()" class="text-red-400 hover:text-red-300 text-xs font-semibold">Reset to Offline</button>
-        <div class="flex gap-2">
-          <button onclick="closeConfigModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs">Cancel</button>
-          <button onclick="saveFirebaseConfig()" class="px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md shadow-amber-500/20">Save & Connect</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
   <footer class="border-t border-slate-800/80 py-4 text-center text-xs text-slate-500">
     EMPR Exports Private Limited • NOUM Commodities Ltd. • EcoStim International L.L.C-FZ • Real-Time Sulfur Desk
   </footer>
 
-  <!-- Firebase v10 Realtime Database SDK via ESM -->
+  <!-- Firebase Modular SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { 
-      getDatabase, 
-      ref, 
-      set, 
-      remove, 
-      onValue 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Initial Seed Deals
+    // Hardcoded Exact Credentials from Your Project
+    const firebaseConfig = {
+      databaseURL: "https://sulfur-desk-default-rtdb.firebaseio.com",
+      apiKey: "AIzaSyDfFdSDZTOYSRndHxMaNj4dZds6tZwk-xM",
+      projectId: "sulfur-desk"
+    };
+
     const defaultDeals = [
       {
         id: "deal-1",
@@ -475,26 +424,17 @@
     let rtdb = null;
 
     function initApp() {
+      // Load fallback local data
       const localData = localStorage.getItem('empr_sulfur_deals');
       if (localData) {
         try { deals = JSON.parse(localData); } catch (e) { deals = [...defaultDeals]; }
       } else {
         deals = [...defaultDeals];
-        localStorage.setItem('empr_sulfur_deals', JSON.stringify(deals));
       }
       renderAll();
 
-      const storedConfig = localStorage.getItem('empr_firebase_config');
-      if (storedConfig) {
-        try {
-          const cfg = JSON.parse(storedConfig);
-          connectRealtimeDB(cfg);
-        } catch (e) {
-          setSyncStatus("Local Cache (Ready for Cloud)", false);
-        }
-      } else {
-        setSyncStatus("Local Cache (Click Config)", false);
-      }
+      // Automatically connect to Firebase
+      connectRealtimeDB(firebaseConfig);
     }
 
     function connectRealtimeDB(cfg) {
@@ -512,7 +452,7 @@
             renderAll();
             setSyncStatus("Realtime Cloud Connected", true);
           } else {
-            // First time seed upload
+            // Seed database
             defaultDeals.forEach((d) => {
               const { id, ...dealData } = d;
               set(ref(rtdb, 'sulfur_deals/' + id), dealData);
@@ -785,48 +725,6 @@
       a.href = url;
       a.download = `EMPR_Sulfur_Deals_${new Date().toISOString().split('T')[0]}.json`;
       a.click();
-    };
-
-    // Firebase Config Modal Handlers
-    window.openConfigModal = function() {
-      const stored = localStorage.getItem('empr_firebase_config');
-      if (stored) {
-        try {
-          const cfg = JSON.parse(stored);
-          document.getElementById('cfgDbUrl').value = cfg.databaseURL || "https://sulfur-desk-default-rtdb.firebaseio.com";
-          document.getElementById('cfgApiKey').value = cfg.apiKey || "";
-          document.getElementById('cfgProjectId').value = cfg.projectId || "sulfur-desk";
-        } catch (e) {}
-      }
-      document.getElementById('configModal').classList.remove('hidden');
-    };
-
-    window.closeConfigModal = function() {
-      document.getElementById('configModal').classList.add('hidden');
-    };
-
-    window.saveFirebaseConfig = function() {
-      const databaseURL = document.getElementById('cfgDbUrl').value.trim();
-      const apiKey = document.getElementById('cfgApiKey').value.trim();
-      const projectId = document.getElementById('cfgProjectId').value.trim();
-
-      if (!apiKey || !databaseURL) {
-        alert("Please enter both the Database URL and your API Key.");
-        return;
-      }
-
-      const cfg = { databaseURL, apiKey, projectId };
-      localStorage.setItem('empr_firebase_config', JSON.stringify(cfg));
-      window.closeConfigModal();
-      connectRealtimeDB(cfg);
-    };
-
-    window.clearFirebaseConfig = function() {
-      localStorage.removeItem('empr_firebase_config');
-      rtdb = null;
-      document.getElementById('cfgApiKey').value = "";
-      setSyncStatus("Local Cache (Ready for Cloud)", false);
-      window.closeConfigModal();
     };
 
     window.renderDealsTable = renderDealsTable;
